@@ -1,0 +1,164 @@
+use rusqlite::{params,Connection,Result};
+use std::io;
+use std::io::prelude::*;
+use std::net::TcpListener;
+use std::net::TcpStream;
+use std::slice;
+use std::str;
+
+fn main() {
+    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+
+    for stream in listener.incoming() {
+        let stream = stream.unwrap();
+        handle_connection(stream);
+        println!("connection");
+    }
+    println!("connection closed");
+    io::stdout().flush().unwrap();
+}
+fn open_db()->Result<Connection,rusqlite::Error>{
+    let path = "./auctionerdb.db3";
+    let con = Connection::open(&path)?;
+    println!("{}",con.is_autocommit());
+    Ok(con)
+}
+
+fn handle_connection(mut stream: TcpStream) {
+    let mut buffer = [0; 1024];
+    stream.read(&mut buffer).unwrap();
+
+    println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
+
+    let greeting = format!("hello. to exit, send \"exit\"\n");
+    stream.write(greeting.as_bytes()).unwrap();
+    stream.flush().unwrap();
+
+    stream.read(&mut buffer).unwrap();
+    println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
+
+    let headadduser = b"adduser";
+    let headsell = b"sell";
+    let headbid = b"bid";
+    let headfinishbid = b"finishbid";
+    let headtopup = b"topup";
+    let headshowitems = b"showitems";
+    let headexit = b"exit";
+    if buffer.starts_with(headadduser) {
+        handle_adduser(stream);
+    // } else if buffer.starts_with(headsell) {
+    //     handle_sell(stream);
+    // } else if buffer.starts_with(headbid) {
+    //     handle_bid(stream);
+    // } else if buffer.starts_with(headfinishbid) {
+    //     handle_finishbid(stream);
+    // } else if buffer.starts_with(headtopup) {
+    //     handle_topup(stream);
+    // } else if buffer.starts_with(headshowitems) {
+    //     handle_showitems(stream);
+    // 
+    }else if buffer.starts_with(headexit) {
+        let response = format!("successfully exited\n");
+        stream.write(response.as_bytes()).unwrap();
+        stream.flush().unwrap();
+    } else {
+        let response = format!("invalid\n");
+        stream.write(response.as_bytes()).unwrap();
+        stream.flush().unwrap();
+    }
+
+}
+
+fn handle_adduser(mut stream: TcpStream) -> i32 {
+    
+
+    let askname = format!("your name:");
+    stream.write(askname.as_bytes()).unwrap();
+    stream.flush().unwrap();
+    let mut buffer = [0; 1024];
+    stream.read(&mut buffer).unwrap();
+    if buffer.starts_with(b"exit"){
+        return -1;
+    }
+    let name = String::from_utf8_lossy(&buffer[..]);
+    println!("{}",name);
+
+    let askbalance = format!("your balance:");
+    stream.write(askbalance.as_bytes()).unwrap();
+    stream.flush().unwrap();
+    let mut buffer = [0; 1024];
+    stream.read(&mut buffer).unwrap();
+    if buffer.starts_with(b"exit"){
+        return -1;
+    }
+    let ba = String::from_utf8_lossy(&buffer[..]);
+    println!("{}",ba);
+
+    let dbcon = open_db().unwrap();
+    //dbにユーザーを追加する処理。型やsqlをどうにかする
+    //dbcon.execute("insert into users (COUNT(*) FROM users,name,balance) values (?1,?2) ",params![name,ba]).unwrap();
+    return 0;
+}
+
+// fn handle_sell(mut stream: TcpStream){
+
+// }
+// handle_bid(mut stream: TcpStream){
+
+// }
+// handle_finishbid(mut stream: TcpStream);
+// handle_topup(mut stream: TcpStream);
+// handle_showitems(mut stream: TcpStream);
+
+// fn content_in_message(message: Message) -> u32 {
+//     match message {
+//         Message::User => 1,
+//         Message::Sell => 2,
+//         Message::Bid => 3,
+//         Message::FinishBid => 4,
+//         Message::TopUp => 5,
+//         Message::ShowItems => 6,
+//     }
+// }
+
+enum Message {
+    AddUser,
+    Sell,
+    Bid,
+    FinishBid,
+    TopUp,
+    ShowItems,
+}
+
+struct User {
+    username: String,
+    birthday: i32,
+    balance: i32,
+}
+
+struct Sell {
+    userid: i32,
+    item_name: String,
+    start_price: i32,
+}
+
+struct Bid {
+    userid: i32,
+    item_id: i32,
+    bid_price: i32,
+}
+
+struct FinishBid {
+    userid: i32,
+    item_id: i32,
+    confirm: String,
+}
+
+struct TopUp {
+    userid: i32,
+    balance: i32,
+}
+
+struct ShowItems {
+    highestprice: i32,
+}
