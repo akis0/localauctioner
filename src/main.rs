@@ -97,7 +97,7 @@ fn handle_adduser(mut stream: TcpStream) -> i32 {
     let nu = m1.trim();
 
     let dbcon = open_db().unwrap();
-    //dbにユーザーを追加する処理
+    //dbにユーザーを追加する処理。
     let mut l:usize=0;
     match dbcon.query_row("select count (?1) from users",params!["id"],|row| row.get(0),){
         Ok(re)=>l=re,
@@ -108,7 +108,6 @@ fn handle_adduser(mut stream: TcpStream) -> i32 {
     let tellid = format!("your id:{}\n",l+1);
     stream.write(tellid.as_bytes()).unwrap();
     stream.flush().unwrap();
-
     return 0;
 }
 
@@ -121,6 +120,7 @@ fn handle_adduser(mut stream: TcpStream) -> i32 {
 // handle_finishbid(mut stream: TcpStream);
 // handle_topup(mut stream: TcpStream);
 // handle_showitems(mut stream: TcpStream);
+
 
 enum Message {
     AddUser,
