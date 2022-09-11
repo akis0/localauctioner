@@ -5,6 +5,7 @@ use std::net::TcpListener;
 use std::net::TcpStream;
 use std::slice;
 use std::str;
+use std::borrow::Borrow;
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
@@ -81,8 +82,8 @@ fn handle_adduser(mut stream: TcpStream) -> i32 {
         return -1;
     }
     let name = String::from_utf8_lossy(&buffer[..]);
-    println!("{}",name);
-
+    let m0 =format!("{}",name);
+    let m = m0.trim();
     let askbalance = format!("your balance:");
     stream.write(askbalance.as_bytes()).unwrap();
     stream.flush().unwrap();
@@ -91,12 +92,22 @@ fn handle_adduser(mut stream: TcpStream) -> i32 {
     if buffer.starts_with(b"exit"){
         return -1;
     }
-    let ba = String::from_utf8_lossy(&buffer[..]);
-    println!("{}",ba);
+    let n = String::from_utf8_lossy(&buffer[..]);
+    let m1 =format!("{}",n);
+    let nu = m1.trim();
 
     let dbcon = open_db().unwrap();
     //dbにユーザーを追加する処理。型やsqlをどうにかする
-    //dbcon.execute("insert into users (COUNT(*) FROM users,name,balance) values (?1,?2) ",params![name,ba]).unwrap();
+    //let l =  dbcon.execute("COUNT id FROM users",params![]).unwrap();
+    let mut l:usize=0;
+    match dbcon.query_row("select count (?1) from users",params!["id"],|row| row.get(0),){
+        Ok(re)=>l=re,
+        Err(err) => println!("error{}",err)
+    }
+    
+    dbcon.execute("insert into users (id,name,balance) values (?1, ?2 , ?3 )",params![l+1,m,nu]).unwrap();
+    
+    print!("{}",l);
     return 0;
 }
 
