@@ -104,8 +104,10 @@ fn handle_adduser(mut stream: TcpStream) -> i32 {
         Err(err) => println!("error{}",err)
     }
     
+    //型をどうにかする
     dbcon.execute("insert into users (id,name,balance) values (?1, ?2 , ?3 )",params![l+1,m,nu]).unwrap();
     let tellid = format!("your id:{}\n",l+1);
+    
     stream.write(tellid.as_bytes()).unwrap();
     stream.flush().unwrap();
     return 0;
