@@ -83,7 +83,7 @@ fn handle_adduser(mut stream: TcpStream) -> i32 {
     }
     let name = String::from_utf8_lossy(&buffer[..]);
     let m0 =format!("{}",name);
-    let m = m0.trim();
+    let m = m0.replace("\r","").replace("\n","");
     let askbalance = format!("your balance:");
     stream.write(askbalance.as_bytes()).unwrap();
     stream.flush().unwrap();
@@ -93,8 +93,8 @@ fn handle_adduser(mut stream: TcpStream) -> i32 {
         return -1;
     }
     let n = String::from_utf8_lossy(&buffer[..]);
-    let m1 =format!("{}",n);
-    let nu = m1.trim();
+    let m1 =format!("{}",n).replace("\r","").replace("\n","");
+    print!("{}",m1);
 
     let dbcon = open_db().unwrap();
     //dbにユーザーを追加する処理。
@@ -104,10 +104,8 @@ fn handle_adduser(mut stream: TcpStream) -> i32 {
         Err(err) => println!("error{}",err)
     }
     
-    //型をどうにかする
-    dbcon.execute("insert into users (id,name,balance) values (?1, ?2 , ?3 )",params![l+1,m,nu]).unwrap();
+    dbcon.execute("insert into users (id,name,balance) values (?1, ?2 , ?3 )",params![l+1,m,m1]).unwrap();
     let tellid = format!("your id:{}\n",l+1);
-    
     stream.write(tellid.as_bytes()).unwrap();
     stream.flush().unwrap();
     return 0;
@@ -123,6 +121,16 @@ fn handle_adduser(mut stream: TcpStream) -> i32 {
 // handle_topup(mut stream: TcpStream);
 // handle_showitems(mut stream: TcpStream);
 
+// fn content_in_message(message: Message) -> u32 {
+//     match message {
+//         Message::User => 1,
+//         Message::Sell => 2,
+//         Message::Bid => 3,
+//         Message::FinishBid => 4,
+//         Message::TopUp => 5,
+//         Message::ShowItems => 6,
+//     }
+// }
 
 enum Message {
     AddUser,
