@@ -13,9 +13,10 @@ topupで残高を増やす
 exitで終了する。つもり。
 
 データベースの構造(予定)
-User: user id(int,unique), user name(string), balance(int)
-items:items id(int,unique), items name(string),owner id(int),Start price(int),expiration date,highest bid(int),highest bid user id(int)
-bids: bid id(int, unique), bidder user id, items id, bid price(int)
+Users: user id(int,unique), user name(string), balance(int) \n
+Items:items id(int,unique), items name(string),owner id(int),Start price(int),expiration date,highest bid(int),highest bid user id(int)\n
+Bids: bid id(int, unique), bidder user id, items id, bid price(int)\n
+
 名前被り対策はしてない。
 
 送信する情報
