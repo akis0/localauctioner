@@ -46,13 +46,14 @@ item id
 "finish"
 
 
-主な関数の簡単な説明
+主な関数の簡単な説明(エラーハンドリングはまだ)
 ・handle_adduser
 上記ユーザー追加の情報を受け取って、idをclientに送信する
-
-(以下未実装)
 ・handle_sell
 上記出品の情報を受け取ってitemsテーブルに登録してそのidをclientに送信する
+
+
+(以下未実装)
 ・handle_bid
 上記入札の情報を受け取って、入札額が更新されたらbidテーブルに登録する。
 ・handle_topup
