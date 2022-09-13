@@ -25,6 +25,8 @@ fn open_db()->Result<Connection,rusqlite::Error>{
     Ok(con)
 }
 
+
+
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
     stream.read(&mut buffer).unwrap();
@@ -47,8 +49,8 @@ fn handle_connection(mut stream: TcpStream) {
     let headexit = b"exit";
     if buffer.starts_with(headadduser) {
         handle_adduser(stream);
-    // } else if buffer.starts_with(headsell) {
-    //     handle_sell(stream);
+    } else if buffer.starts_with(headsell) {
+        handle_sell(stream);
     // } else if buffer.starts_with(headbid) {
     //     handle_bid(stream);
     // } else if buffer.starts_with(headfinishbid) {
@@ -81,9 +83,7 @@ fn handle_adduser(mut stream: TcpStream) -> i32 {
     if buffer.starts_with(b"exit"){
         return -1;
     }
-    let name = String::from_utf8_lossy(&buffer[..]);
-    let m0 =format!("{}",name);
-    let m = m0.replace("\r","").replace("\n","");
+    let username =format!("{}",String::from_utf8_lossy(&buffer[..])).replace("\r","").replace("\n","");
     let askbalance = format!("your balance:");
     stream.write(askbalance.as_bytes()).unwrap();
     stream.flush().unwrap();
@@ -92,28 +92,73 @@ fn handle_adduser(mut stream: TcpStream) -> i32 {
     if buffer.starts_with(b"exit"){
         return -1;
     }
-    let n = String::from_utf8_lossy(&buffer[..]);
-    let m1 =format!("{}",n).replace("\r","").replace("\n","");
-    print!("{}",m1);
+    let balance =format!("{}",String::from_utf8_lossy(&buffer[..])).replace("\r","").replace("\n","");
+    print!("{}",balance);
 
     let dbcon = open_db().unwrap();
     //dbにユーザーを追加する処理。
     let mut l:usize=0;
-    match dbcon.query_row("select count (?1) from users",params!["id"],|row| row.get(0),){
+    match dbcon.query_row("select count (?1) from Users",params!["id"],|row| row.get(0),){
         Ok(re)=>l=re,
         Err(err) => println!("error{}",err)
     }
     
-    dbcon.execute("insert into users (id,name,balance) values (?1, ?2 , ?3 )",params![l+1,m,m1]).unwrap();
+    dbcon.execute("insert into Users (id,name,balance) values (?1, ?2 , ?3 )",params![l+1,username,balance]).unwrap();
+
+    Connection::close(dbcon).unwrap();
+
     let tellid = format!("your id:{}\n",l+1);
     stream.write(tellid.as_bytes()).unwrap();
     stream.flush().unwrap();
     return 0;
 }
 
-// fn handle_sell(mut stream: TcpStream){
+fn handle_sell(mut stream: TcpStream) -> i32 {
+    let asksell = format!("your user id:");
+    stream.write(asksell.as_bytes()).unwrap();
+    stream.flush().unwrap();
+    let mut buffer = [0; 1024];
+    stream.read(&mut buffer).unwrap();
+    if buffer.starts_with(b"exit"){
+        return -1;
+    }
+    let userid =format!("{}",String::from_utf8_lossy(&buffer[..])).replace("\r","").replace("\n","");
+    
+    let askname = format!("your item name:");
+    stream.write(askname.as_bytes()).unwrap();
+    stream.flush().unwrap();
+    let mut buffer = [0; 1024];
+    stream.read(&mut buffer).unwrap();
+    if buffer.starts_with(b"exit"){
+        return -1;
+    }
+    let item_name =format!("{}",String::from_utf8_lossy(&buffer[..])).replace("\r","").replace("\n","");
 
-// }
+    let askprice = format!("start price:");
+    stream.write(askprice.as_bytes()).unwrap();
+    stream.flush().unwrap();
+    let mut buffer = [0; 1024];
+    stream.read(&mut buffer).unwrap();
+    if buffer.starts_with(b"exit"){
+        return -1;
+    }
+    let start_price =format!("{}",String::from_utf8_lossy(&buffer[..])).replace("\r","").replace("\n","");
+
+
+    let dbcon = open_db().unwrap();
+    let mut l:usize=0;
+    match dbcon.query_row("select count (?1) from Items",params!["id"],|row| row.get(0),){
+        Ok(re)=>l=re,
+        Err(err) => println!("error{}",err)
+    }
+    dbcon.execute("insert into Items (id,itemname,ownerid,startprice) values (?1, ?2 , ?3,?4 )",params![l+1,item_name,userid,start_price]).unwrap();
+    Connection::close(dbcon).unwrap();
+    
+    let tellid = format!("your item id:{}\n",l+1);
+    stream.write(tellid.as_bytes()).unwrap();
+    stream.flush().unwrap();
+    return 0;
+}
 // handle_bid(mut stream: TcpStream){
 
 // }
@@ -141,11 +186,7 @@ enum Message {
     ShowItems,
 }
 
-struct User {
-    username: String,
-    birthday: i32,
-    balance: i32,
-}
+
 
 struct Sell {
     userid: i32,
