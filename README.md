@@ -12,7 +12,7 @@ finishbidで入札を締め切る
 topupで残高を増やす
 exitで終了する。つもり。
 
-データベースの構造(予定) <br>
+sqlite3のデータベースの構造(予定) <br>
 Users: user id(int,unique), user name(string), balance(int) <br>
 Items:item id(int,unique), item name(string),owner id(int),Start price(int),expiration date,highest bid id(int) <br>
 Bids: bid id(int, unique), bidder id, item id, bid price(int) <br>
