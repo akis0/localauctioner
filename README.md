@@ -13,8 +13,8 @@ topupで残高を増やす
 exitで終了する。つもり。
 
 sqlite3のデータベースの構造(予定) <br>
-Users: userid(int,unique), username(string), balance(int) <br>
-Items:itemid(int,unique), itemname(string),ownerid(int),startprice(int),expiration date<br>
+Users: userid(int,unique), username(text), balance(int) <br>
+Items:itemid(int,unique), itemname(text),ownerid(int),startprice(int),expiration date<br>
 Bids: bidid(int, unique), bidderid, itemid,bidprice(int) <br>
 
 名前被り対策はしてない。
