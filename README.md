@@ -15,11 +15,11 @@ exitで終了する。つもり。
 sqlite3のデータベースの構造(予定) <br>
 Users: userid(int,unique), username(string), balance(int) <br>
 Items:itemid(int,unique), itemname(string),ownerid(int),startprice(int),expiration date<br>
-Bids: bidid(int, unique), bidderid, item id,bidprice(int) <br>
+Bids: bidid(int, unique), bidderid, itemid,bidprice(int) <br>
 
 名前被り対策はしてない。
 
-送信する情報
+送信する情報<br>
 ・ユーザー追加
 "adduser"
 ユーザー名
