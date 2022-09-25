@@ -16,6 +16,9 @@ sqlite3のデータベースの構造(予定) <br>
 Users: userid(int,unique), username(text), balance(int) <br>
 Items:itemid(int,unique), itemname(text),ownerid(int),startprice(int),expiration date<br>
 Bids: bidid(int, unique), bidderid, itemid,bidprice(int) <br>
+Finitems: itemid,itemname,ownerid,startprice,finishprice(int)<br>
+
+
 
 名前被り対策はしてない。
 
@@ -54,6 +57,8 @@ item id
 
 
 (以下未実装)
+・handle_finishbid
+itemidで終了するものを指定して値段を確定させる
 ・handle_bid
 上記入札の情報を受け取って、入札額が更新されたらbidテーブルに登録する。
 ・handle_topup
