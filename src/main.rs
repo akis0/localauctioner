@@ -7,9 +7,13 @@ use std::slice;
 use std::str;
 use std::borrow::Borrow;
 
+// users table (userid unique,name text,balance int)
+// items table (itemid unique,name text,startprice int,currentprice int,ownerid int,putupdate,deadlinedate)
+// bids table (bidid unique,itemid int,userid int,date,price int, success bool )
+// balancechange table (balancechangeid unique,payuserid int,getuserid, date,amount int)
+
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
-
     for stream in listener.incoming() {
         let stream = stream.unwrap();
         handle_connection(stream);
@@ -25,7 +29,10 @@ fn open_db()->Result<Connection,rusqlite::Error>{
     Ok(con)
 }
 
-
+//write function that adds user to db
+fn adduser(name:&str,con:&Connection)->Result<(),rusqlite::Error>{ 
+    
+}
 
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
