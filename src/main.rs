@@ -29,10 +29,7 @@ fn open_db()->Result<Connection,rusqlite::Error>{
     Ok(con)
 }
 
-//write function that adds user to db
-fn adduser(name:&str,con:&Connection)->Result<(),rusqlite::Error>{ 
-    
-}
+
 
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
