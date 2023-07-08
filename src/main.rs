@@ -17,14 +17,12 @@ get userid : userid,name,balance,items
 get itemid : itemid,name,startprice,currentprice,ownerid,putupdate,deadlinedate
 get items, condition : all items that meet condition
 
-post itemid, price : bid with price 
-post item : put up new item 
+post itemid, price : bid with the price 
+post item : put up a new item 
 post newuser name : add new user
 
-post item state: item shall be nocked down
+post item state: update item state
 post balance : change balance
-
-
 */
 
 
