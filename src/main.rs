@@ -1,16 +1,32 @@
+use rocket::post;
 use rusqlite::{params,Connection,Result};
 use std::io;
 use std::io::prelude::*;
 use std::net::TcpListener;
 use std::net::TcpStream;
-use std::slice;
-use std::str;
-use std::borrow::Borrow;
-
+use rocket::tokio::task::spawn_blocking;
+use rocket;
+use rocket::tokio::time::{sleep, Duration};
 // users table (userid unique,name text,balance int)
 // items table (itemid unique,name text,startprice int,currentprice int,ownerid int,putupdate,deadlinedate)
 // bids table (bidid unique,itemid int,userid int,date,price int, success bool )
 // balancechange table (balancechangeid unique,payuserid int,getuserid, date,amount int)
+
+/* 
+get userid : userid,name,balance,items
+get itemid : itemid,name,startprice,currentprice,ownerid,putupdate,deadlinedate
+get items : all items that meet condition
+
+post itemid price : bid with price 
+post item : put up new item 
+post item state: item shall be nocked down
+
+*/
+
+
+
+
+
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
@@ -28,8 +44,6 @@ fn open_db()->Result<Connection,rusqlite::Error>{
     println!("{}",con.is_autocommit());
     Ok(con)
 }
-
-
 
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
