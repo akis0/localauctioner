@@ -1,5 +1,29 @@
 # localauctioner
 
+HTTPリクエストで動かすようにしたい。Rocket使う。
+
+
+
+
+
+
+
+
+
+users table (userid unique,name text,balance int)
+items table (itemid unique,name text,startprice int,currentprice int,ownerid int,putupdate,deadlinedate,state)
+bids table (bidid unique,itemid int,userid int,date,price int, success bool )
+balancechange table (balancechangeid unique,payuserid int,getuserid, date,amount int)
+
+
+
+
+
+
+
+
+
+
 telnetで接続して、ユーザーの追加、出品、入札、入札締め切り、出品物の閲覧などができるものを作りたい。
 なりすまし、盗聴などセキュリティ関係は考慮していない
 
