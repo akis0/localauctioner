@@ -26,7 +26,6 @@ fn open_db()->Result<Connection,rusqlite::Error>{
 }
 
 
- 
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
     stream.read(&mut buffer).unwrap();
